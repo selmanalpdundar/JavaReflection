@@ -2,6 +2,10 @@ public class Vehicle {
     private String vehicleType;
     private int vehiclePrice;
 
+    public Vehicle(){
+
+    }
+
     public Vehicle(String vehicleType, int vehiclePrice){
         setVehiclePrice(vehiclePrice);
         setVehicleType(vehicleType);

@@ -2,6 +2,11 @@ public class Car extends Vehicle implements Movable, Breakable {
     private int model;
     private int color;
     private String year;
+    public boolean secondHand = false;
+
+    public Car(){
+
+    }
 
     public Car(String vehicleType, int price, int model, int color, String year){
         super(vehicleType,price);

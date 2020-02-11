@@ -1,10 +1,12 @@
 import java.lang.reflect.*;
+import java.util.LinkedList;
+
 public class Main {
 
     public static void main(String args[]){
 
         /**
-         * Getting basic class informations with reflection class
+         *  Using reflection for Introspection
          */
 
         // Retrieving Class Object
@@ -124,6 +126,169 @@ public class Main {
             }
 
         }
+
+
+        // calling method with name and  parameter type
+        /*
+            To be sure it is exist we need to wrap it with try catch block to prevent future craching
+            that way we can have a control of flow
+         */
+
+        // it will handled by No such method exception
+        try {
+            Method method = myClass.getMethod("seColor", int.class);
+        } catch (NoSuchMethodException e){
+            System.out.println("Method not found : "+e.toString());
+        }
+
+        // it will work normally because it exists
+        try {
+            Method method = myClass.getMethod("setColor", int.class);
+            System.out.println(method.getName());
+        } catch (NoSuchMethodException e){
+            System.out.println("Method not found : "+e.toString());
+        }
+
+        /**
+         * Explanation of Generic Types in Java Reflection
+         *  Due to Java's erasure semantics, generic type information is not represented at run time
+         *  for that reason when we call a generic class's method it will cause exception
+         *  we can call generic class's method by object class then it will work normally
+         *
+         */
+
+        LinkedList<String> list = new LinkedList<String>();
+        Class listClass = list.getClass();
+
+        // Broken way
+        try{
+            Method method = listClass.getMethod("add",String.class);
+
+        } catch (NoSuchMethodException e){
+            System.out.println("Method not found : "+ e.toString());
+        }
+
+        // Correct way
+        try{
+            Method method = listClass.getMethod("add",Object.class);
+            System.out.println("Method Name : "+method.getName());
+        } catch (NoSuchMethodException e){
+            System.out.println("Method not found : "+ e.toString());
+        }
+
+
+        /**
+         * Using reflection for Program Manipulation
+         */
+
+        // Creating new object
+        // Car mycar = new Car();
+        Class carClass = Car.class;
+
+        try {
+            Car car = (Car) carClass.newInstance();
+
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
+        // Creating new object with constructor with arguments
+        // Car car = new Car("Sedan",1000,1994,2,"2000");
+
+        // Creating new object with reflection
+        // Create argument type array to get correct constructor
+        Class[] classArguments = new Class[]{String.class,int.class,int.class,int.class,String.class};
+        // Prepare value of the arguments
+        Object[] arguments = new Object[]{new String("Sedan"),new Integer(1000),new Integer(1994),new Integer(2), new String("2000")};
+
+        /**
+         * Java wants us to handle exception for that reason we need to get them inside try catch and handle exceptions
+         */
+        try {
+            // get constructor with correct parameter types
+            Constructor constructor = carClass.getConstructor(classArguments);
+            try {
+                // Get instance from constructor with arguments value
+                Car car = (Car) constructor.newInstance(arguments);
+
+            } catch (InstantiationException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        }
+
+        // Getting Fields Value
+        // car.model -> if it were public but we encapsulate them so car.getModel()
+        // car.secondHand
+
+        Class carClass2 = Car.class;
+        Car  car = new Car();
+
+        try {
+            Field field = carClass2.getField("secondHand");
+            boolean secondHand =  (boolean) field.get(car);
+            System.out.println("is it second hand :  "+secondHand);
+
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
+
+        // Setting Field Value
+        // car.secondHand = false;
+
+        try {
+            Class c = car.getClass();
+            Field f = c.getField("secondHand");
+            f.set(car,new Boolean(true));
+            boolean secondHand =  (boolean) f.get(car);
+            System.out.println("is it second hand :  "+secondHand);
+
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
+
+
+
+        // Invoking Methods
+        String string1 = "Hello";
+        String string2 = "World";
+        // String result  = string1.concat(string2);
+
+        // Getting a class
+         Class c = String.class;
+         // Preparing method types
+         Class[] paramtypes =  new Class[]{String.class};
+         // Preparing method parameters
+         Object[] argms =  new Object[]{string2};
+
+        try {
+            // Getting method
+            Method concatMethod = c.getMethod("concat",paramtypes);
+            // Invoking method with arguments
+            String result = (String) concatMethod.invoke(string1,argms);
+            System.out.println("Result  = "+result);
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
+        }
+
+        /** Forbidden Operations by privacy rules;
+         *  Changing a Final Field
+         *  Reading or writing a private field
+         *  Invoking a private method
+         *
+         *  Not: Request granted if no security manager, or if the existing security manager allows it
+         */
+
+
 
     }
 }
