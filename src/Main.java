@@ -317,12 +317,13 @@ public class Main {
 
         for(Field field: privateFields2){
             try{
+                // We make private field accessible by setting it true
                 field.setAccessible(true);
+
                 if(!Modifier.isStatic(field.getModifiers())){
                     System.out.println("Name of Field : "+field.get(car));
                 }
             } catch (Exception e){
-                // it will throw error with modifier "private"
                 System.out.println("Exception : "+e.toString());
             }
 
