@@ -289,6 +289,44 @@ public class Main {
          */
 
 
+        // Accessing Private Fields
+
+        System.out.println(" ----------- Accessing Private Field Wrong Implementation --------------");
+
+        // This is the wrong implementation to access private field
+        Class classPrivate = Car.class;
+        Field[] privateFields = classPrivate.getDeclaredFields();
+
+        for(Field field: privateFields){
+            try{
+                if(!Modifier.isStatic(field.getModifiers())){
+                    System.out.println("Name of Field : "+field.get(car));
+                }
+            } catch (Exception e){
+                // it will throw error with modifier "private"
+                System.out.println("Exception : "+e.toString());
+            }
+
+        }
+
+        System.out.println("---------------- Accessing Private Field Correct Implementation -----------------");
+
+        // This is the correct implementation to access private field
+        Class classPrivate2 = Car.class;
+        Field[] privateFields2 = classPrivate.getDeclaredFields();
+
+        for(Field field: privateFields2){
+            try{
+                field.setAccessible(true);
+                if(!Modifier.isStatic(field.getModifiers())){
+                    System.out.println("Name of Field : "+field.get(car));
+                }
+            } catch (Exception e){
+                // it will throw error with modifier "private"
+                System.out.println("Exception : "+e.toString());
+            }
+
+        }
 
     }
 }
